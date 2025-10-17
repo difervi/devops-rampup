@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <style>
+    .bg { fill:#ffffff }
+    .vpc { fill:#f8fafc; stroke:#2b6cb0; stroke-width:2px; rx:8; }
+    .az { fill:#fff; stroke:#cbd5e0; }
+    .subnet-public { fill:#ebf8ff; stroke:#2b6cb0; }
+    .subnet-private { fill:#f0fff4; stroke:#38a169; }
+    .service { fill:#fffdf0; stroke:#d69e2e; }
+    .resource { fill:#ffffff; stroke:#4a5568; }
+    .text { font-family: Inter, Arial, Helvetica, sans-serif; fill:#1a202c }
+    .title { font-size:18px; font-weight:700 }
+    .label { font-size:13px }
+    .small { font-size:11px; fill:#4a5568 }
+    .arrow { stroke:#2d3748; stroke-width:1.6; marker-end:url(#arrow); }
+    .dashed { stroke-dasharray:6 4; }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#2d3748" />
+    </marker>
+  </defs>
+
+  <!-- Header -->
+  <rect x="20" y="10" width="1360" height="60" fill="#1a202c" rx="6"/>
+  <text x="40" y="48" class="text title" fill="#fff">Network architecture (detailed) — module: terraform/modules/network</text>
+
+  <!-- VPC container -->
+  <rect x="30" y="90" width="1340" height="760" class="vpc"/>
+  <text x="50" y="118" class="text label">VPC: movie-qa (10.10.0.0/16)</text>
+
+  <!-- AZ columns -->
+  <!-- AZ: us-east-1a -->
+  <rect x="60" y="150" width="420" height="600" class="az" rx="6"/>
+  <text x="70" y="174" class="text label">AZ: us-east-1a</text>
+
+  <!-- Public subnet in AZ A -->
+  <rect x="90" y="200" width="360" height="170" class="subnet-public" rx="6"/>
+  <text x="100" y="224" class="text">Public subnet (10.10.1.0/24)</text>
+  <rect x="110" y="250" width="120" height="48" class="resource" rx="6"/>
+  <text x="140" y="282" class="text small">Bastion (EC2)</text>
+  <rect x="250" y="250" width="120" height="48" class="resource" rx="6"/>
+  <text x="276" y="282" class="text small">NAT-a (EC2) + EIP</text>
+
+  <!-- Private subnet in AZ A -->
+  <rect x="90" y="390" width="360" height="230" class="subnet-private" rx="6"/>
+  <text x="100" y="414" class="text">Private subnet (10.10.101.0/24)</text>
+  <rect x="120" y="450" width="120" height="48" class="resource" rx="6"/>
+  <text x="135" y="482" class="text small">App EC2</text>
+  <rect x="260" y="450" width="160" height="48" class="resource" rx="6"/>
+  <text x="276" y="482" class="text small">Backend (App) EC2</text>
+
+  <!-- AZ: us-east-1b -->
+  <rect x="470" y="150" width="420" height="600" class="az" rx="6"/>
+  <text x="480" y="174" class="text label">AZ: us-east-1b</text>
+
+  <!-- Public subnet in AZ B -->
+  <rect x="500" y="200" width="360" height="170" class="subnet-public" rx="6"/>
+  <text x="510" y="224" class="text">Public subnet (10.10.2.0/24)</text>
+  <rect x="520" y="250" width="120" height="48" class="resource" rx="6"/>
+  <text x="548" y="282" class="text small">ALB (opcional)</text>
+  <rect x="660" y="250" width="120" height="48" class="resource" rx="6"/>
+  <text x="680" y="282" class="text small">NAT-b (EC2) (opt)</text>
+
+  <!-- Private subnet in AZ B -->
+  <rect x="500" y="390" width="360" height="230" class="subnet-private" rx="6"/>
+  <text x="510" y="414" class="text">Private subnet (10.10.102.0/24)</text>
+  <rect x="540" y="450" width="120" height="48" class="resource" rx="6"/>
+  <text x="555" y="482" class="text small">App EC2</text>
+  <rect x="680" y="450" width="160" height="48" class="resource" rx="6"/>
+  <text x="692" y="482" class="text small">RDS MySQL (in subnet group)</text>
+
+  <!-- Internet Gateway -->
+  <rect x="980" y="200" width="240" height="60" class="service" rx="6"/>
+  <text x="995" y="235" class="text small">Internet Gateway (IGW)</text>
+
+  <!-- Route tables overview -->
+  <rect x="980" y="290" width="240" height="60" class="service" rx="6"/>
+  <text x="995" y="325" class="text small">Public RT → 0.0.0.0/0 to IGW</text>
+  <rect x="980" y="360" width="240" height="60" class="service" rx="6"/>
+  <text x="995" y="395" class="text small">Private RT → 0.0.0.0/0 to NAT (network_interface)</text>
+
+  <!-- Security Groups legend -->
+  <rect x="980" y="450" width="240" height="110" class="service" rx="6"/>
+  <text x="995" y="475" class="text small">Security Groups (examples):</text>
+  <text x="995" y="495" class="text small">- App SG: allow 80/443 from ALB SG, allow 3306 to RDS SG</text>
+  <text x="995" y="515" class="text small">- RDS SG: allow 3306 from App SG only</text>
+  <text x="995" y="535" class="text small">- Bastion SG: allow SSH from office IP</text>
+
+  <!-- Flow arrows -->
+  <line x1="370" y1="270" x2="980" y2="235" class="arrow" />
+  <text x="410" y="260" class="text small">EIP assoc → IGW (NAT a)</text>
+
+  <line x1="370" y1="330" x2="980" y2="380" class="arrow dashed" />
+  <text x="430" y="360" class="text small">Private RT routes to NAT (primary network interface)</text>
+
+  <line x1="700" y1="480" x2="800" y2="480" class="arrow" />
+  <text x="740" y="470" class="text small">App → RDS (TCP 3306)</text>
+
+  <!-- Notes box -->
+  <rect x="60" y="770" width="1240" height="100" rx="6" fill="#fffaf0" stroke="#f6ad55"/>
+  <text x="80" y="796" class="text small">Notas: en QA usamos NAT instance por coste; en Prod recomendamos NAT Gateway y ALB para alta disponibilidad.</text>
+  <text x="80" y="814" class="text small">Recomendación: automatizar hardening de NAT &amp; Bastion con Ansible y monitorizar con CloudWatch.</text>
+
+  <text x="60" y="860" class="text small">Generated: architecture-diagram-detailed.svg</text>
+</svg>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1000" height="700" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .box { fill:#f7fafc; stroke:#2b6cb0; stroke-width:2px; }
+    .subnet-public { fill:#ebf8ff; stroke:#2b6cb0; }
+    .subnet-private { fill:#f0fff4; stroke:#38a169; }
+    .text { font-family: Arial, Helvetica, sans-serif; font-size:13px; fill:#1a202c }
+    .title { font-weight:700; font-size:16px }
+    .small { font-size:11px; fill:#4a5568 }
+    .arrow { stroke:#4a5568; stroke-width:1.6; marker-end: url(#arrowhead); }
+    .service { fill:#fff8dc; stroke:#d69e2e }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4a5568" />
+    </marker>
+  </defs>
+
+  <!-- VPC box -->
+  <rect x="30" y="30" width="940" height="640" class="box" rx="6" ry="6"/>
+  <text x="50" y="55" class="text title">VPC: movie-qa (10.10.0.0/16)</text>
+
+  <!-- Public subnets -->
+  <rect x="60" y="90" width="420" height="230" class="subnet-public" rx="6" ry="6"/>
+  <text x="70" y="110" class="text"><tspan class="title">Public subnets (AZs)</tspan></text>
+  <text x="70" y="130" class="text small">- bastion (EC2)</text>
+  <text x="70" y="150" class="text small">- ALB / (opcional)</text>
+  <text x="70" y="170" class="text small">- NAT instance (EC2) & EIP</text>
+
+  <!-- Private subnets -->
+  <rect x="520" y="90" width="420" height="420" class="subnet-private" rx="6" ry="6"/>
+  <text x="530" y="110" class="text"><tspan class="title">Private subnets (AZs)</tspan></text>
+  <text x="530" y="130" class="text small">- Application EC2 instances</text>
+  <text x="530" y="150" class="text small">- RDS MySQL (private)</text>
+
+  <!-- Internet Gateway and EIP -->
+  <rect x="60" y="340" width="130" height="60" class="service" rx="6" ry="6"/>
+  <text x="70" y="365" class="text small">Internet Gateway (IGW)</text>
+
+  <rect x="220" y="340" width="130" height="60" class="service" rx="6" ry="6"/>
+  <text x="230" y="365" class="text small">EIP</text>
+  <text x="230" y="380" class="text small">(assoc -> NAT EC2)</text>
+
+  <!-- Bastion box icon -->
+  <rect x="80" y="170" width="120" height="60" rx="6" ry="6" fill="#fff" stroke="#4a5568"/>
+  <text x="90" y="193" class="text">Bastion (EC2)</text>
+
+  <!-- NAT instance icon -->
+  <rect x="240" y="170" width="120" height="60" rx="6" ry="6" fill="#fff" stroke="#4a5568"/>
+  <text x="250" y="193" class="text">NAT (EC2)</text>
+
+  <!-- Arrow IGW -> Public route -->
+  <line x1="150" y1="400" x2="350" y2="400" class="arrow" />
+
+  <!-- Arrows: NAT to private subnets route -->
+  <line x1="300" y1="230" x2="520" y2="230" class="arrow" />
+  <text x="360" y="220" class="text small">Route 0.0.0.0/0 → NAT (network_interface)</text>
+
+  <!-- App instances box inside private subnet -->
+  <rect x="560" y="160" width="160" height="80" rx="6" ry="6" fill="#fff" stroke="#4a5568"/>
+  <text x="570" y="190" class="text">App EC2</text>
+
+  <!-- RDS box -->
+  <rect x="740" y="160" width="180" height="80" rx="6" ry="6" fill="#fff" stroke="#4a5568"/>
+  <text x="750" y="180" class="text">RDS MySQL (private)</text>
+
+  <!-- Arrow App -> RDS (DB traffic) -->
+  <line x1="720" y1="200" x2="740" y2="200" class="arrow" />
+  <text x="660" y="210" class="text small">TCP 3306 (SG restrict)</text>
+
+  <!-- Legend -->
+  <rect x="60" y="530" width="880" height="120" rx="6" ry="6" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="75" y="555" class="text title">Leyenda y notas</text>
+  <text x="75" y="575" class="text small">- Bastion: host para Ansible y administración (acceso restringido).</text>
+  <text x="75" y="595" class="text small">- NAT (EC2): instancia t3.micro con iptables haciendo SNAT (opción libre de coste relativo en QA).</text>
+  <text x="75" y="615" class="text small">- RDS MySQL: desplegado en subnets privadas, accesible solo desde App SG o Bastion para administración.</text>
+
+  <!-- Footer -->
+  <text x="60" y="675" class="text small">Generated: architecture-diagram.svg — module: terraform/modules/network</text>
+
+</svg>
