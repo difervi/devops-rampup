@@ -26,3 +26,21 @@ docker-compose.override.yml
 
 # Misc
 *.log
+
+# Cleanup additions
+# Terraform
+*.tfplan
+.terraform/
+
+# Keys and archives
+*.pem
+*.zip
+
+# Node
+node_modules/
+
+# AWS dist artifacts
+aws/dist/
+
+# Test results
+test-results.xml

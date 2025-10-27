@@ -1,0 +1,13 @@
+[Unit]
+Description=movie-analyst service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory={{ app_path }}
+ExecStart=/usr/bin/node {{ app_path }}/index.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

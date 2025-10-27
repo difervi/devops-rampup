@@ -1,0 +1,76 @@
+---
+# Backend deployment tasks: if `app_image` is provided, pull it from the registry
+# and run the container. Otherwise clone the repo, build locally and run.
+
+- name: Ensure app path exists
+  file:
+    path: "{{ app_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Ensure app environment file exists (create blank if template missing)
+  template:
+    src: movie-analyst.env.j2
+    dest: "{{ app_path }}/.env"
+    mode: '0600'
+
+- block:
+    - name: Get ECR login password (only if ecr_registry provided)
+      shell: aws ecr get-login-password --region {{ aws_region | default('us-east-1') }}
+      register: ecr_pass
+      changed_when: false
+      failed_when: ecr_pass.rc != 0 and ecr_registry is defined
+
+    - name: Login to ECR (if ecr_registry provided)
+      community.docker.docker_login:
+        registry_url: "{{ ecr_registry }}"
+        username: AWS
+        password: "{{ ecr_pass.stdout }}"
+      when: ecr_registry is defined
+
+    - name: Pull app image from registry
+      community.docker.docker_image:
+        name: "{{ app_image }}"
+        source: pull
+
+    - name: Run movie-analyst container (from registry image)
+      community.docker.docker_container:
+        name: movie-analyst
+        image: "{{ app_image }}"
+        state: started
+        restart_policy: unless-stopped
+        env_file: "{{ app_path }}/.env"
+        published_ports:
+          - "3000:3000"
+      become: true
+  when: app_image is defined and app_image | length > 0
+
+- block:
+    - name: Clone app repository
+      git:
+        repo: "{{ app_repo }}"
+        dest: "{{ app_path }}"
+        version: master
+
+    - name: Build Docker image for the app (local build)
+      community.docker.docker_image:
+        path: "{{ app_path }}"
+        name: movie-analyst:latest
+        pull: no
+      become: true
+
+    - name: Run movie-analyst container (local build)
+      community.docker.docker_container:
+        name: movie-analyst
+        image: movie-analyst:latest
+        state: started
+        restart_policy: unless-stopped
+        env_file: "{{ app_path }}/.env"
+        published_ports:
+          - "3000:3000"
+        volumes:
+          - "{{ app_path }}:/usr/src/app:ro"
+      become: true
+  when: app_image is not defined or app_image | length == 0

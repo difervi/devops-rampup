@@ -1,0 +1,14 @@
+---
+- hosts: app
+  become: true
+  vars:
+    app_repo: "https://github.com/example/movie-analyst.git"
+    app_path: "/opt/movie-analyst"
+    # If you pushed an image to ECR, set app_image to the full image URI below.
+    # Example: 439391123226.dkr.ecr.us-east-1.amazonaws.com/movie-analyst:latest
+    app_image: ""
+    # ecr_registry is used to log in (optional if image is public or already accessible)
+    ecr_registry: ""
+    aws_region: "us-east-1"
+  roles:
+    - backend

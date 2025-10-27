@@ -1,0 +1,13 @@
+---
+# Bootstrap the bastion and QA hosts with common configuration
+- hosts: bastion
+  become: true
+  vars:
+    node_version: "18.x"
+  roles:
+    - common
+
+- hosts: qa
+  become: true
+  roles:
+    - common

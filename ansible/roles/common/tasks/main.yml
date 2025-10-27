@@ -1,0 +1,39 @@
+---
+- name: Update apt cache (Debian/Ubuntu)
+  package:
+    name: git
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure curl is available
+  package:
+    name: curl
+    state: present
+
+- name: Install build tools (gcc, make) on RedHat-family
+  package:
+    name:
+      - gcc-c++
+      - make
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: Create application directory
+  file:
+    path: /opt
+    state: directory
+    mode: '0755'
+
+- name: Update yum and install basics
+  package:
+    name:
+      - git
+      - python3
+      - docker
+    state: present
+
+- name: Ensure docker started and enabled
+  service:
+    name: docker
+    state: started
+    enabled: true
