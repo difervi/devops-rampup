@@ -1,0 +1,5 @@
+---
+- name: Restart movie-analyst
+  systemd:
+    name: movie-analyst
+    state: restarted

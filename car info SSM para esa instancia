@@ -1,0 +1,17 @@
+[
+    [
+        "i-073e9852c41555515",
+        "running",
+        "98.82.21.229",
+        "10.10.1.145",
+        "t3.micro",
+        "2025-10-21T21:26:49+00:00",
+        "arn:aws:iam::439391123226:instance-profile/SSMAccessProfile",
+        [
+            {
+                "GroupId": "sg-03ef1d1591aaa65f6",
+                "GroupName": "devops-qa-bastion-sg-devops-qa"
+            }
+        ]
+    ]
+]

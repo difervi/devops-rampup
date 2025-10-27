@@ -6,3 +6,8 @@ output "bastion_public_ip" {
 output "bastion_instance_id" {
   value = try(aws_instance.bastion[0].id, "")
 }
+
+output "bastion_sg_id" {
+  value       = try(aws_security_group.bastion_sg.id, "")
+  description = "Security Group id for the bastion instances"
+}
